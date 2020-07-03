@@ -1,1 +1,1 @@
-# serverless-hol
+# Amazon Serverless Hands On Lab
