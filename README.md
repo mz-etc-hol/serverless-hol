@@ -363,7 +363,19 @@ Amazon API Gateway에서 말하는 경로(Routes)란 API 요청 수신 정보를
 1. 생성된 경로와 통합 정보를 확인합니다.
 ![](images/amazon_api_gateway_todo_api_fetch_todo_8.png)
 
-#### 3. 생성된 API 테스트 해 보기.
+#### 3. 도전 과제
+
+현재까지는 API Gateway에 "fetch-todo" Lambda 함수 하나만 통합하였습니다. 나머지 3개 함수도 위의 내용을 참고하여 직접 수행해 보시기 바랍니다.
+
+| Path  | Method   | 통합할 Lambda 함수 |
+| ----  | :------: | --------------- |
+| /todo | ~~GET~~      | ~~fetch-todo~~      |
+|       | POST     | add-todo        |
+|       | PUT      | update-todo     |
+|       | DELETE   | delete-todo     |
+
+
+#### 4. 생성된 API 테스트 해 보기.
 현재까지 1개 Lambda에 대해서면 API Gateway 통합이 완료되었습니다. 이 생성된 API Gateway와 Lambda 기능이 정상적으로 동작되는지 확인해보기 위해서 DynamoDB 테이블에 직접 데이터를 추가한 후, Amazon API Gateway에 생성된 API를 테스트 해 보겠습니다.
 
 1. Amazon DynamoDB 관리 화면으로 이동한 후, `TODO` 테이블을 선택합니다.
@@ -373,14 +385,18 @@ Amazon API Gateway에서 말하는 경로(Routes)란 API 요청 수신 정보를
 1. `항목 만들기` 버튼을 눌러 테스트 데이터를 아래와 같이 입력합니다.
 ![](images/amazon_api_gateway_testing-dynamodb_2.png)
 ![](images/amazon_api_gateway_testing-dynamodb_3.png)
-1. 브라우저를 열어 새로 생성된 API의 URL 정보를 이용하여 호출해 봅니다.
+1. 브라우저를 열어 새로 생성된 API의 URL 정보를 이용하여 호출하여 화면에 아래와 같이 JSON 데이터가 출력되는지 확인합니다.
 ![](images/amazon_api_gateway_testing-1.png)
 ![](images/amazon_api_gateway_testing-2.png)
 
-### Amazon S3 정적 웹 호스팅 만들기
+### Amazon S3로 정적 웹 사이트 호스팅하기
 
-Todo Web App의 웹 영역을 처리하는 index.html 파일과 todo.js 파일을 Amazon S3의 버킷에 업로드합니다.
+Todo Web App의 웹 영역을 처리하는 index.html 파일과 todo.js 파일을 Amazon S3의 버킷에 업로드합니다. S3의 정적 웹 사이트 호스팅 기능을 이용해서 웹서버 기능을 손쉽게 구성할 수 있습니다.
 
-#### 1. S3 버킷 생성
+#### 1. Amazon S3 버킷 생성
+1. Amazon S3 관리 화면으로 이동합니다.
+![](images/amazon_s3_1.png)
+1. S3 관리 화면에서 `버킷 만들기` 버튼을 클릭합니다.
+![](images/amazon_s3_2.png)
 
-#### 1. sldkfjsldfkj
+
