@@ -533,6 +533,7 @@ Todo Web App의 웹 영역을 처리하는 index.html 파일과 todo.js 파일�
 </html>
 ```
 <br>
+
 > **todo.js**
 
 ```javascript
