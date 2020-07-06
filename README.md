@@ -546,7 +546,9 @@ Todo Web App의 웹 영역을 처리하는 index.html 파일과 todo.js 파일�
 
 > **todo.js**
 
-==아래 내용 중에서 `serverlessUrl` 부분의 주소는 위에서 생성한 API Gateway의 주소로 변경하시기 바랍니다.==
+```
+아래 내용 중에서 `serverlessUrl` 부분의 주소는 위에서 생성한 여러부들의 API Gateway의 주소로 변경하시기 바랍니다.
+```
 
 ```javascript
 var todoStorage = {
