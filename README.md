@@ -374,8 +374,18 @@ Amazon API Gateway에서 말하는 경로(Routes)란 API 요청 수신 정보를
 |       | PUT      | update-todo     |
 |       | DELETE   | delete-todo     |
 
+#### 4. CORS 설정
 
-#### 4. 생성된 API 테스트 해 보기.
+지금까지 설정한 API Gateway를 웹 사이트에서 사용하려면 CORS(Cross-Origin Resource Sharing) 설정이 되어야 합니다.
+이 CORS 설정이 되어 있지 않다면, Javascript를 이용하여 AJAX 호출시 오류가 발생하지 주의해 주시기 바랍니다.
+
+
+본 Hands-on 에서는 전체 허용 설정만 하도록 하겠습니다. 다음 화면을 참고하셔서 설정을 해 주시기 바랍니다.
+![](images/amazon_api_gateway_cors_1.png)
+![](images/amazon_api_gateway_cors_2.png)
+![](images/amazon_api_gateway_cors_3.png)
+
+#### 5. 생성된 API 테스트 해 보기.
 현재까지 1개 Lambda에 대해서면 API Gateway 통합이 완료되었습니다. 이 생성된 API Gateway와 Lambda 기능이 정상적으로 동작되는지 확인해보기 위해서 DynamoDB 테이블에 직접 데이터를 추가한 후, Amazon API Gateway에 생성된 API를 테스트 해 보겠습니다.
 
 1. Amazon DynamoDB 관리 화면으로 이동한 후, `TODO` 테이블을 선택합니다.
