@@ -398,5 +398,330 @@ Todo Web App의 웹 영역을 처리하는 index.html 파일과 todo.js 파일�
 ![](images/amazon_s3_1.png)
 1. S3 관리 화면에서 `버킷 만들기` 버튼을 클릭합니다.
 ![](images/amazon_s3_2.png)
+1. 버킷 이름을 **전 세계에서 중복되지 않는 고유한 이름**으로 입력한 후, `생성`버튼을 클릭합니다.
+   S3버킷 이름은 정적 웹 사이트 호스팅시 URL로도 사용이 됩니다. 따라서, S3의 버킷 이름은 전 세계에서 유일해야하며 중복된 이름을 입력할 수 없습니다.
+   (아래의 *"2020-mzc-serverless-hol"* 이름은 더 이상 사용할 수 없습니다. 😊)
+![](images/amazon_s3_3.png)
+1. 생성된 버킷이 목록에 나타는 지 확인합니다.
+![](images/amazon_s3_4.png)
 
+#### 2. 버킷을 정적 웹 사이트 호스팅 기능 사용하기
+1. 버킷을 클릭하여 `속성` 탭으로 이동합니다.
+![](images/amazon_s3_5.png)
+1. 속성 탭에서 **"정적 웹 사이트 호스팅"** 부분을 클릭합니다.
+![](images/amazon_s3_6.png)
+1. 정적 웹 사이트 호스팅이 활성화 됐을 때 접속할 수 있는 **엔드포인트 URL**이 표시되는 것을 확인한 후, **"인덱스 문서"** 파일 명에 `"index.html"`로 입력후 `저장` 버튼을 클릭합니다.
+![](images/amazon_s3_7.png)
+참고로 생성된 S3 버킷의 엔드포인트 주소는 다음과 같습니다.
+   - http://2020-mzc-serverless-hol.s3-website.ap-northeast-2.amazonaws.com
+2. 정적 웹 사이트 호스팅 항목이 선택되었는지 확인합니다.
+![](images/amazon_s3_8.png)
 
+#### 3. 웹 사이트 액세스에 대한 권한 설정
+웹 사이트 호스팅 기능을 활성화하더라도 바로 브라우저에서 접속할 수는 없습니다. 이는 버킷의 권한 설정이 기본적으로 "퍼블릭 액세스"가 차단되도록 설정되어 있기 때문입니다.
+따라서, 브라우저에서 접속이 가능하게 하려면, 이 기능을 꺼 주셔야 합니다.
+
+1. 권한 탭으로 이동하여 퍼블릭 액세스 차단을 비활성화 합니다.
+![](images/amazon_s3_9.png)
+![](images/amazon_s3_10.png)
+![](images/amazon_s3_11.png)
+![](images/amazon_s3_12.png)
+
+#### 4. 버킷 정책 추가
+마지막으로 버킷안의 파일을 공개적으로 읽기 가능하도록 만들기 위해 버킷 정책을 추가합니다.
+![](images/amazon_s3_13.png)
+
+버킷 정책 내용은 아래 내용을 사용합니다.
+```json
+ {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadGetObject",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::버킷이름/*"
+            ]
+        }
+    ]
+}
+```
+단! 내용을 입력하실 때 `Resource` 부분의 내용중에서 `버킷이름` 부분은 여러분들이 만드신 버킷 이름으로 변경하시기 바랍니다.
+
+버킷 정책이 올바르게 적용되었다면, 아래와 같이 "퍼블릭 액세스 권한" 안내 메세지가 출력됩니다.
+![](images/amazon_s3_14.png)
+
+#### 5. 접속 테스트
+지금까지 설정한 내용이 잘 적용되었는지 확인해 봅니다.
+
+`index.html` 파일과 `todo.js` 파일 2개를 S3 에 업로드합니다.
+
+> **index.html**
+
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Serverless Todo App</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/todomvc-app-css@2.2.0/index.css">
+
+  <style id="compiled-css" type="text/css">
+    [v-cloak] {
+      display: none;
+    }
+
+    /* EOS */
+  </style>
+
+</head>
+
+<body>
+
+  <section class="todoapp">
+    <header class="header">
+      <h1>todos</h1>
+      <input class="new-todo" autofocus autocomplete="off" placeholder="What needs to be done?" v-model="newTodo"
+        @keyup.enter="addTodo">
+    </header>
+    <section class="main" v-show="todos.length" v-cloak>
+      <ul class="todo-list">
+        <li v-for="todo in filteredTodos" class="todo" :key="todo.TODO_ID"
+          :class="{ completed: todo.COMPLETED, editing: todo == editedTodo }">
+          <div class="view">
+            <input class="toggle" type="checkbox" v-model="todo.COMPLETED" @change="changeCompleted(todo)">
+            <label @dblclick="editTodo(todo)">{{ todo.TITLE }}</label>
+            <button class="destroy" @click="removeTodo(todo)"></button>
+          </div>
+          <input class="edit" type="text" v-model="todo.TITLE" v-todo-focus="todo == editedTodo" @blur="doneEdit(todo)"
+            @keyup.enter="doneEdit(todo)" @keyup.esc="cancelEdit(todo)">
+        </li>
+      </ul>
+    </section>
+    <footer class="footer" v-show="todos.length" v-cloak>
+      <span class="todo-count">
+        <strong>{{ remaining }}</strong> {{ remaining | pluralize }} left
+      </span>
+      <ul class="filters">
+        <li><a href="#/all" :class="{ selected: visibility == 'all' }">All</a></li>
+        <li><a href="#/active" :class="{ selected: visibility == 'active' }">Active</a></li>
+        <li><a href="#/completed" :class="{ selected: visibility == 'COMPLETED' }">Completed</a></li>
+      </ul>
+    </footer>
+  </section>
+  <footer class="info">
+    <p>Double-click to edit a todo</p>
+    <p>Written by <a href="http://evanyou.me">Evan You</a></p>
+    <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+  </footer>
+
+  <script type="text/javascript" src="todo.js"></script>
+</body>
+
+</html>
+```
+<br>
+> **todo.js**
+
+```javascript
+var todoStorage = {
+    serverlessUrl: "https://여러분의_API_GATEWAY_주소",
+    fetch: function () {
+        axios.get(this.serverlessUrl + "/todo")
+            .then(response => {
+                var todos = response.data;
+                console.log("Received todos: ", todos)
+                app.todos = todos
+            })
+            .catch(error => {
+                console.error("Uh oh? Something wrong!!")
+            })
+    },
+    add: function (todo) {
+        axios.post(this.serverlessUrl + "/todo", todo)
+            .then(response => {
+                console.log("Added todo: " + todo)
+            })
+            .catch(error => {
+                console.error("Uh oh? Something wrong!!")
+            })
+    },
+    update: function (todo) {
+        axios.put(this.serverlessUrl + "/todo", todo)
+            .then(response => {
+                console.log("Updated todo: " + todo)
+            })
+            .catch(error => {
+                console.error("Uh oh? Something wrong!!")
+            })
+    },
+    remove: function (todo) {
+        axios.delete(this.serverlessUrl + "/todo", {
+                params: {
+                    TODO_ID: todo.TODO_ID
+                }
+            })
+            .then(response => {
+                console.log("Updated todo: " + todo)
+            })
+            .catch(error => {
+                console.error("Uh oh? Something wrong!!")
+            })
+    }
+}
+
+// visibility filters
+var filters = {
+    all: function (todos) {
+        return todos
+    },
+    active: function (todos) {
+        return todos.filter(function (todo) {
+            return !todo.COMPLETED
+        })
+    },
+    completed: function (todos) {
+        return todos.filter(function (todo) {
+            return todo.COMPLETED
+        })
+    }
+}
+
+// app Vue instance
+var app = new Vue({
+    // app initial state
+    data: {
+        todos: [],
+        newTodo: '',
+        editedTodo: null,
+        visibility: 'all'
+    },
+
+    // computed properties
+    // http://vuejs.org/guide/computed.html
+    computed: {
+        filteredTodos: function () {
+            return filters[this.visibility](this.todos)
+        },
+        remaining: function () {
+            return filters.active(this.todos).length
+        },
+        allDone: {
+            get: function () {
+                return this.remaining === 0
+            },
+            set: function (value) {
+                this.todos.forEach(function (todo) {
+                    todo.COMPLETED = value
+                })
+            }
+        }
+    },
+
+    filters: {
+        pluralize: function (n) {
+            return n === 1 ? 'item' : 'items'
+        }
+    },
+
+    // methods that implement data logic.
+    // note there's no DOM manipulation here at all.
+    methods: {
+        addTodo: function () {
+            var value = this.newTodo && this.newTodo.trim()
+            if (!value) {
+                return
+            }
+            var _newTodo = {
+                //id: todoStorage.uid++,
+                TODO_ID: Date.now(),
+                TITLE: value,
+                COMPLETED: false
+            };
+            this.todos.push(_newTodo)
+            todoStorage.add(_newTodo)
+            this.newTodo = ''
+        },
+
+        removeTodo: function (todo) {
+            this.todos.splice(this.todos.indexOf(todo), 1)
+            todoStorage.remove(todo)
+        },
+
+        editTodo: function (todo) {
+            this.beforeEditCache = todo.TITLE
+            this.editedTodo = todo
+        },
+
+        changeCompleted: function (todo) {
+            todoStorage.update(todo)
+        },
+
+        doneEdit: function (todo) {
+            if (!this.editedTodo) {
+                return
+            }
+            this.editedTodo = null
+            todo.TITLE = todo.TITLE.trim()
+            if (!todo.TITLE) {
+                this.removeTodo(todo)
+            } else {
+                todoStorage.update(todo)
+            }
+        },
+
+        cancelEdit: function (todo) {
+            this.editedTodo = null
+            todo.TITLE = this.beforeEditCache
+        },
+
+        removeCompleted: function () {
+            this.todos = filters.active(this.todos)
+        }
+    },
+
+    created: function () {
+        todoStorage.fetch();
+    },
+
+    // a custom directive to wait for the DOM to be updated
+    // before focusing on the input field.
+    // http://vuejs.org/guide/custom-directive.html
+    directives: {
+        'todo-focus': function (el, binding) {
+            if (binding.value) {
+                el.focus()
+            }
+        }
+    }
+})
+
+// handle routing
+function onHashChange() {
+    var visibility = window.location.hash.replace(/#\/?/, '')
+    if (filters[visibility]) {
+        app.visibility = visibility
+    } else {
+        window.location.hash = ''
+        app.visibility = 'all'
+    }
+}
+
+window.addEventListener('hashchange', onHashChange)
+onHashChange()
+
+// mount
+app.$mount('.todoapp')
+```
