@@ -536,6 +536,8 @@ Todo Web App의 웹 영역을 처리하는 index.html 파일과 todo.js 파일�
 
 > **todo.js**
 
+==아래 내용 중에서 `serverlessUrl` 부분의 주소는 위에서 생성한 API Gateway의 주소로 변경하시기 바랍니다.==
+
 ```javascript
 var todoStorage = {
     serverlessUrl: "https://여러분의_API_GATEWAY_주소",
@@ -726,3 +728,18 @@ onHashChange()
 // mount
 app.$mount('.todoapp')
 ```
+
+1. S3 버킷에서 2개 파일을 업로드 합니다.
+![](images/amazon_s3_15.png)
+![](images/amazon_s3_16.png)
+![](images/amazon_s3_17.png)
+1. 업로드가 완료되면 2개 파일이 목록에 표시됩니다.
+![](images/amazon_s3_18.png)
+1. 접속해 봅니다.
+![](images/amazon_s3_19.png)
+
+## 리소스 삭제
+
+실습을 완료하였다면, 지금까지 생성한 리소스를 모두 지워서 불필요한 지출이 발생하지 않도록 하시기를 당부 드립니다.
+
+감사합니다.
